@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pour Toi, Maman</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #0a000f;
+            --bg-mid: #1a001a;
+            --bg-light: #2d0025;
+            --pink-primary: #FF6BA8;
+            --pink-glow: #ff1b8d;
+            --gold-accent: #D4A017;
+            --text-main: rgba(255, 240, 245, 0.92);
+            --text-secondary: rgba(255, 180, 200, 0.65);
+            --matrix-color: #FF6BA8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: black;
+            color: var(--text-main);
+            overflow-x: hidden;
+            font-family: 'Cormorant Garamond', serif;
+            min-height: 100vh;
+        }
+
+        /* --- 1. INTRO: PINK MATRIX RAIN --- */
+        #matrix-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #matrix-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #countdown-container {
+            position: relative;
+            z-index: 1001;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+        }
+
+        #countdown-number {
+            font-size: 140px;
+            font-weight: bold;
+            color: var(--pink-primary);
+            text-shadow: 0 0 20px var(--pink-primary), 0 0 40px var(--pink-glow);
+            display: none;
+        }
+
+        .pop-animation {
+            animation: pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(4); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #heart-reveal {
+            font-size: 150px;
+            display: none;
+            animation: heartPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes heartPop {
+            0% { transform: scale(0) rotate(180deg); }
+            100% { transform: scale(1.2) rotate(0deg); }
+        }
+
+        /* --- 2. STARFIELD & CONSTELLATION --- */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #aquarius-svg {
+            position: fixed;
+            top: 15%;
+            right: 5%;
+            width: 250px;
+            height: 250px;
+            z-index: 1;
+            opacity: 0.3;
+            filter: drop-shadow(0 0 5px var(--pink-primary));
+            animation: pulseConstellation 4s infinite ease-in-out;
+        }
+
+        @keyframes pulseConstellation {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+
+        /* --- 3. MAIN CONTENT --- */
+        #main-content {
+            opacity: 0;
+            transition: opacity 2s ease-in;
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 80px;
+            background: radial-gradient(circle at center, var(--bg-light) 0%, var(--bg-mid) 50%, var(--bg-deep) 100%);
+        }
+
+        /* --- 4. PHOTO BOOK (Flip Effect) --- */
+        .book-container {
+            perspective: 1500px;
+            width: 280px;
+            height: 380px;
+            margin: 60px auto 40px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            pointer-events: none; /* Controlled by book click */
+        }
+
+        .page-front, .page-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px 15px 15px 4px;
+            box-shadow: inset 3px 0 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 1px solid rgba(255, 107, 168, 0.3);
+        }
+
+        .page-front { background: #2a001a; z-index: 2; }
+        .page-back { background: #1a0010; transform: rotateY(180deg); }
+
+        .page-img {
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+            border: 1px solid rgba(212, 160, 23, 0.4);
+            border-radius: 8px;
+        }
+
+        .page.flipped { transform: rotateY(-180deg); }
+
+        .book-hint {
+            text-align: center;
+            font-size: 14px;
+            color: var(--pink-primary);
+            margin-top: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 2px;
+            animation: pulseText 2s infinite;
+        }
+
+        /* --- 5. HEART ALBUM --- */
+        #heart-album {
+            position: relative;
+            width: 320px;
+            height: 310px;
+            margin: 80px auto;
+            z-index: 10;
+        }
+
+        .photo-circle {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2.5px solid var(--pink-primary);
+            box-shadow: 0 0 15px rgba(255, 107, 168, 0.4);
+            background-size: cover;
+            background-position: center;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0) rotate(180deg);
+            opacity: 0;
+        }
+
+        .photo-circle.show {
+            transform: scale(1) rotate(0);
+            opacity: 1;
+        }
+
+        /* --- REST OF UI --- */
+        .hero {
+            padding-top: 80px;
+            padding-bottom: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .badge {
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .hero-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(48px, 11vw, 80px);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .name-highlight {
+            color: var(--pink-primary);
+            text-shadow: 0 0 15px var(--pink-glow);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 168, 0.15);
+            border-radius: 20px;
+            padding: 25px;
+            width: 85%;
+            max-width: 380px;
+            margin: 15px auto;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .card-text {
+            font-size: 19px;
+            line-height: 1.7;
+            font-style: italic;
+            color: var(--text-main);
+        }
+
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            color: var(--pink-primary);
+            margin-top: 15px;
+            display: block;
+            text-align: right;
+        }
+
+        #music-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--pink-primary), var(--gold-accent));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            z-index: 2000;
+            border: none;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 107, 168, 0.4);
+        }
+
+        .floating-star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--d) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Matrix Screen (Pink) -->
+    <div id="matrix-screen">
+        <canvas id="matrix-canvas"></canvas>
+        <div id="countdown-container">
+            <div id="countdown-number">3</div>
+            <div id="heart-reveal">💗</div>
+        </div>
+    </div>
+
+    <!-- 2. Starry Sky Layer -->
+    <div id="starfield"></div>
+    
+    <!-- Aquarius Constellation SVG -->
+    <svg id="aquarius-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10,40 L30,30 L50,45 L70,35 L90,50 M30,30 L35,15 M50,45 L55,65 L75,75 M70,35 L80,20" 
+              fill="none" stroke="var(--pink-primary)" stroke-width="0.5" stroke-dasharray="2,2"/>
+        <!-- Stars -->
+        <circle cx="10" cy="40" r="1.5" fill="white"/>
+        <circle cx="30" cy="30" r="1.5" fill="white"/>
+        <circle cx="50" cy="45" r="2" fill="white"/>
+        <circle cx="70" cy="35" r="1.5" fill="white"/>
+        <circle cx="90" cy="50" r="1.5" fill="white"/>
+        <circle cx="35" cy="15" r="1.5" fill="white"/>
+        <circle cx="55" cy="65" r="1.5" fill="white"/>
+        <circle cx="75" cy="75" r="1.5" fill="white"/>
+        <circle cx="80" cy="20" r="1.5" fill="white"/>
+    </svg>
+
+    <!-- 3. Main Content -->
+    <main id="main-content">
+        <section class="hero">
+            <span class="badge">Un message céleste</span>
+            <h1 class="hero-title">Pour Toi, <br><span class="name-highlight">Maman</span></h1>
+        </section>
+
+        <!-- 4. Photo Book -->
+        <p class="book-hint">Touchez le livre pour l'ouvrir</p>
+        <div class="book-container">
+            <div class="book" id="photo-book">
+                <!-- Pages generated in JS -->
+            </div>
+        </div>
+
+        <!-- 5. Heart Album -->
+        <h2 style="font-family: 'Dancing Script'; font-size: 38px; color: var(--pink-primary); text-align: center; margin-top: 40px;">Un Cœur de Souvenirs</h2>
+        <div id="heart-album">
+            <!-- 16 Photos generated in JS -->
+        </div>
+
+        <section class="card">
+            <p class="card-text">
+                "Tu es l'étoile la plus brillante de ma constellation. Ta force et ta douceur guident chacun de mes pas."
+            </p>
+            <span class="signature">Avec tout mon amour,</span>
+        </section>
+
+        <section class="card">
+            <p class="card-text">
+                Que ce moment soit aussi unique que l'énergie du Verseau qui nous entoure. Merci d'être toi.
+            </p>
+            <span class="signature">Ton enfant</span>
+        </section>
+
+        <div style="margin: 40px auto; font-size: 32px; text-align: center;">
+            ✨ 🌌 🌸
+        </div>
+    </main>
+
+    <!-- Music -->
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle">🎵</button>
+
+    <script>
+        // --- 1. Matrix Rain (Pink) ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, columns;
+        const fontSize = 16;
+        let drops = [];
+
+        function initMatrix() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = Math.floor(width / fontSize);
+            drops = Array(columns).fill(1);
+        }
+
+        const characters = 'アカサタナハマヤラワ0123456789'.split('');
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#FF6BA8';
+            ctx.font = fontSize + 'px Courier New';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#FF6BA8';
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        initMatrix();
+        const matrixInterval = setInterval(drawMatrix, 40);
+
+        // --- 2. Starfield ---
+        const starfield = document.getElementById('starfield');
+        function createStars() {
+            for(let i=0; i<150; i++) {
+                const star = document.createElement('div');
+                star.className = 'floating-star';
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
+                starfield.appendChild(star);
+            }
+        }
+        createStars();
+
+        // --- 3. Countdown & Transition ---
+        const countdownEl = document.getElementById('countdown-number');
+        const heartReveal = document.getElementById('heart-reveal');
+        const matrixScreen = document.getElementById('matrix-screen');
+        const mainContent = document.getElementById('main-content');
+        let count = 3;
+
+        function runCountdown() {
+            countdownEl.style.display = 'block';
+            const timer = setInterval(() => {
+                if (count > 0) {
+                    countdownEl.innerText = count;
+                    countdownEl.classList.remove('pop-animation');
+                    void countdownEl.offsetWidth;
+                    countdownEl.classList.add('pop-animation');
+                    count--;
+                } else {
+                    clearInterval(timer);
+                    countdownEl.style.display = 'none';
+                    heartReveal.style.display = 'block';
+                    setTimeout(() => {
+                        matrixScreen.style.opacity = '0';
+                        mainContent.style.display = 'flex';
+                        setTimeout(() => {
+                            mainContent.style.opacity = '1';
+                            initBook();
+                            initHeart();
+                            tryAutoplay();
+                        }, 100);
+                        setTimeout(() => { 
+                            matrixScreen.style.display = 'none';
+                            clearInterval(matrixInterval);
+                        }, 1500);
+                    }, 1000);
+                }
+            }, 1000);
+        }
+        window.onload = runCountdown;
+
+        // --- 4. 3D Photo Book Logic ---
+        let bookOpening = false;
+        function initBook() {
+            const book = document.getElementById('photo-book');
+            const photoUrls = Array.from({length: 6}, (_, i) => `https://picsum.photos/400/600?random=${i + 20}`);
+            const pagesArr = [];
+            
+            photoUrls.forEach((url, index) => {
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.style.zIndex = photoUrls.length - index;
+                
+                page.innerHTML = `
+                    <div class="page-front">
+                        <img src="${url}" class="page-img" alt="Souvenir ${index + 1}">
+                    </div>
+                    <div class="page-back">
+                        <img src="${photoUrls[(index + 1) % photoUrls.length]}" class="page-img" alt="Souvenir ${index + 2}">
+                    </div>
+                `;
+                book.appendChild(page);
+                pagesArr.push(page);
+            });
+
+            const bookContainer = document.querySelector('.book-container');
+            bookContainer.style.cursor = 'pointer';
+            bookContainer.addEventListener('click', () => {
+                if (bookOpening) return;
+                bookOpening = true;
+                
+                pagesArr.forEach((page, i) => {
+                    setTimeout(() => {
+                        page.classList.add('flipped');
+                        page.style.zIndex = i + 1;
+                        if (i === pagesArr.length - 1) {
+                            document.querySelector('.book-hint').innerText = "Un voyage inoubliable...";
+                        }
+                    }, i * 800);
+                });
+            });
+        }
+
+        // --- 5. Heart Album Logic ---
+        function initHeart() {
+            const container = document.getElementById('heart-album');
+            const photoCount = 16;
+            const photos = Array.from({length: photoCount}, (_, i) => `https://picsum.photos/200/200?random=${i + 40}`);
+            
+            for (let i = 0; i < photoCount; i++) {
+                const t = (i / photoCount) * 2 * Math.PI;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                
+                const posX = (x + 16) * (320 / 32) - 32;
+                const posY = (y + 13) * (310 / 30) - 32;
+                
+                const photo = document.createElement('div');
+                photo.className = 'photo-circle';
+                photo.style.backgroundImage = `url(${photos[i]})`;
+                photo.style.left = posX + 'px';
+                photo.style.top = posY + 'px';
+                
+                container.appendChild(photo);
+                
+                setTimeout(() => {
+                    photo.classList.add('show');
+                }, i * 150 + 2000); // Wait for book animation to breathe
+            }
+        }
+
+        // --- 5. Music Logic ---
+        const audio = document.getElementById('bg-music');
+        const musicToggle = document.getElementById('music-toggle');
+        let isPlaying = false;
+
+        function tryAutoplay() {
+            audio.volume = 0.5;
+            audio.play().then(() => {
+                isPlaying = true;
+                musicToggle.innerText = '🎶';
+            }).catch(() => {
+                document.addEventListener('touchstart', () => {
+                    if(!isPlaying) { audio.play(); isPlaying = true; musicToggle.innerText = '🎶'; }
+                }, {once: true});
+            });
+        }
+
+        musicToggle.addEventListener('click', () => {
+            if (isPlaying) { audio.pause(); musicToggle.innerText = '🎵'; }
+            else { audio.play(); musicToggle.innerText = '🎶'; }
+            isPlaying = !isPlaying;
+        });
+    </script>
+</body>
+</html>
