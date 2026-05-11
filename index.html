@@ -407,11 +407,80 @@ body{
   100%{box-shadow:0 0 0 22px rgba(255,107,168,0),0 8px 20px rgba(0,0,0,.4)}
 }
 
-/* responsive */
-@media(max-width:380px){
-  .book{width:260px;height:200px}
-  .heart-wrap{transform:scale(.92)}
+/* ─────────────────────────── RESPONSIVE ─────────────────────────── */
+
+/* Très petits téléphones (≤360px) */
+@media (max-width: 360px){
+  .section{padding-left:16px;padding-right:16px}
+  .book{width:240px;height:175px}
+  .book-stage{height:240px;width:100%}
+  .heart-wrap{transform:scale(.82);transform-origin:top center;height:260px}
+  .sky-wrap{height:280px}
+  .card{padding:22px 18px;width:94%}
+  .card-text{font-size:17px;line-height:1.7}
+  .card-text .lead-cap{font-size:36px;margin-right:8px}
+  .hero-title{margin:18px 0 4px}
+  .heart-hb{font-size:36px}
+  #countdown-num{font-size:clamp(72px,20vw,110px)}
+  #heart-pop{font-size:clamp(90px,26vw,140px)}
+  .flowers-row{letter-spacing:6px;font-size:18px}
+  #music-toggle{width:48px;height:48px;bottom:16px;right:16px;font-size:20px}
 }
+
+/* Téléphones standards (361–480px) — design de base, inchangé */
+
+/* Tablette (≥640px) */
+@media (min-width: 640px){
+  .section{max-width:560px;padding:clamp(72px,9vw,110px) 32px}
+  .sky-wrap{width:min(520px,90vw);height:400px}
+  .book-stage{width:min(440px,80vw);height:320px}
+  .book{width:380px;height:280px}
+  .face .title-ds{font-size:26px}
+  .face .quote{font-size:15px}
+  .heart-wrap{transform:scale(1.15);transform-origin:top center;margin:40px auto 70px}
+  .card{padding:34px 30px}
+  .card-text{font-size:21px;line-height:1.9}
+  .quote-text{font-size:clamp(24px,4.2vw,30px)}
+  #music-toggle{width:60px;height:60px;font-size:24px;bottom:28px;right:28px}
+}
+
+/* Desktop (≥1024px) */
+@media (min-width: 1024px){
+  .section{max-width:680px}
+  .sky-wrap{width:min(620px,70vw);height:460px}
+  .book-stage{width:min(500px,55vw);height:360px}
+  .book{width:440px;height:320px}
+  .heart-wrap{transform:scale(1.25);margin:50px auto 90px}
+  .card{padding:40px 36px;border-radius:26px}
+  .card-text{font-size:22px}
+  /* léger éclairage de fond plus visible sur grand écran */
+  #bg-vignette{background:radial-gradient(ellipse at 50% 25%,transparent 0%,rgba(0,0,0,0.65) 90%)}
+}
+
+/* Mode paysage mobile (hauteur faible) — compacter pour éviter le scroll inutile dans le hero */
+@media (max-height: 520px) and (orientation: landscape){
+  .hero{padding-top:40px}
+  .section{padding-top:36px;padding-bottom:36px}
+  .sky-wrap{height:240px}
+  .book-stage{height:220px}
+  .book{width:260px;height:180px}
+  #countdown-num{font-size:80px}
+  #heart-pop{font-size:100px}
+}
+
+/* Respect des préférences d'animation réduite */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+  .heart-hb,.flowers-row span,#bg-animated,.aurora,.book-hint,#music-toggle{animation:none !important}
+}
+
+/* Empêcher tout débordement horizontal résiduel */
+img,canvas,svg{max-width:100%}
 </style>
 </head>
 <body>
